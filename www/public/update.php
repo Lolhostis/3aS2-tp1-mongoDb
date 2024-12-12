@@ -10,7 +10,7 @@ if (!empty($_POST)) {
     try {
         $author = $_POST['author'];
         $cote = $_POST['cote'];
-       // $edition_bool = $_POST['edition'];
+        $edition_bool = isset($_POST['edition']) ? ($_POST['edition'] == true) : false;
         $langue = $_POST['langue'];
         $objectid = $_POST['objectid'];
         $century = $_POST['century'];
@@ -19,7 +19,7 @@ if (!empty($_POST)) {
         $dataToUpdate = [
             'auteur' => $author,
             'cote' => $cote,
-           // 'edition' => $edition_bool ? "S. l. ? : [S.n]." : "",
+            'edition' => $edition_bool ? "S. l. ? : [S.n]." : "",
             'langue' => $langue,
             'objectid' => $objectid,
             'siecle' => $century,

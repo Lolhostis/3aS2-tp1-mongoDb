@@ -13,7 +13,7 @@
         <input type="text" id="cote" name="cote" size="10" value="{{ entity.cote }}">
 
         <label for="edition">Edition :</label>
-        <input type="checkbox" id="edition" name="edition" value="{{ entity.edition ? true : false }}">
+        <input type="checkbox" id="edition" name="edition" value="1" {% if entity.edition is not empty %}checked{% endif %}>
         <label for="edition">S. l. ? : [S.n].</label>
 
         <label for="langue">Langue :</label>
