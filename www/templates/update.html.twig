@@ -4,16 +4,29 @@
 {% block content %}
 <p>&larr;&nbsp;<a href="/index.php">Retourner à la liste</a></p>
 <form action="/update.php" method="post">
-        <input type="hidden" id="id" name="id" value="{{ entity._id }}">
-
-        <label for="title">Titre :</label>
-        <input type="text" id="title" name="title" value="récupérez la valeur depuis mongodb" size="100">
+        <input type="hidden" id="id" name="id" value="{{ entity._id }}" required>
 
         <label for="author">Auteur :</label>
-        <input type="text" id="author" name="author" size="50" value="récupérez la valeur depuis mongodb">
+        <input type="text" id="author" name="author" size="50" value="{{ entity.auteur }}">
 
-        <label for="author">Siècle :</label>
-        <input type="number" id="century" name="century" value="123456879">
+        <label for="cote">Cote :</label>
+        <input type="text" id="cote" name="cote" size="10" value="{{ entity.cote }}">
+
+        <label for="edition">Edition :</label>
+        <input type="checkbox" id="edition" name="edition" value="{{ entity.edition ? true : false }}">
+        <label for="edition">S. l. ? : [S.n].</label>
+
+        <label for="langue">Langue :</label>
+        <input type="text" id="langue" name="langue" size="50" value="{{ entity.langue }}">
+
+        <label for="objectid">ObjectId :</label>
+        <input type="number" id="objectid" name="objectid" value="{{ entity.objectid }}">
+
+        <label for="century">Siècle :</label>
+        <input type="number" id="century" name="century" size="2" value="{{ entity.siecle }}">
+
+        <label for="title">Titre :</label>
+        <input type="text" id="title" name="title" size="100" value="{{ entity.titre }}">
 
         <button type="submit">Enregistrer</button>
 </form>

@@ -2,7 +2,15 @@
 
 {% block title %}Index{% endblock %}
 {% block content %}
+<h1><a href="create.php">Ajouter un manuscrit</a></h1>
 <h1>Liste des manuscrits de la bibliothèque du Patrimoine de Clermont Auvergne Métropole</h1>
+
+<form action="search.php" method="post">
+    <label for="search">Rechercher le titre d'un manuscrit :</label>
+    <input type="text" id="search" name="search" size="50">
+    <button type="submit">Rechercher</button>
+</form>
+
 <table>
     <tr>
         <th>Référence</th>
@@ -10,13 +18,25 @@
         <th>Auteur</th>
         <th>Actions</th>
     </tr>
-    {% for document in list %}
-    <tr>
-        <td>{{ document.name }}</td>
-        <td>{{ document.name }}</td>
-        <td>{{ document.name }}</td>
-        <td><a href="get.php?id=1">voir</a>&nbsp;/&nbsp;<a href="edit.php?id=1">éditer</a>&nbsp;/&nbsp;<a href="delete.php?id=1">supprimer</a></td>
-    </tr>
+    {% for document in part_of_list_to_display %}
+        <tr>
+            <td>{{ document._id }}</td>
+            <td>{{ document.titre }}</td>
+            <td>{{ document.auteur }}</td>
+            <td><a href="get.php?id={{ document._id }}">voir</a>&nbsp;/&nbsp;<a href="edit.php?id={{ document._id }}">éditer</a>&nbsp;/&nbsp;<a href="delete.php?id={{ document._id }}">supprimer</a></td>
+        </tr>
     {% endfor %}
+</table>
+
+<table>
+    <tr>
+        {% if page_number - 1 > 0 %}
+            <td><a href="index.php?page_number={{ page_number - 1 }}&query={{ query }}">Page précédente ({{ page_number - 1 }})</a></td>
+        {% endif %}
+        <td>Page courante</td>
+        {% if page_number + 1 < max_page_number %}
+            <td><a href="index.php?page_number={{ page_number + 1 }}&query={{ query }}">Page suivante ({{ page_number + 1 }})</a></td>
+        {% endif %}
+    </tr>
 </table>
 {% endblock %}

@@ -11,7 +11,7 @@ $manager = getMongoDbManager();
 
 // @todo implementez la récupération des données d'une entité et la passer au template
 // petite aide : https://github.com/VSG24/mongodb-php-examples
-$entity = ['name' => 'test'];
+$entity = $manager->selectCollection('tp')->findOne(['_id' => new MongoDB\BSON\ObjectId($_GET['id'])]);
 
 // render template
 try {

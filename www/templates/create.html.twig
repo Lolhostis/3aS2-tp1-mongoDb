@@ -3,15 +3,29 @@
 {% block title %}Création d'un livre{% endblock %}
 {% block content %}
 <p>&larr;&nbsp;<a href="/index.php">Retourner à la liste</a></p>
+<p>{{ erreur }}</p>
 <form action="/create.php" method="post">
-        <label for="title">Titre :</label>
-        <input type="text" id="title" name="title" size="100">
-
         <label for="author">Auteur :</label>
         <input type="text" id="author" name="author" size="50">
 
+        <label for="cote">Cote :</label>
+        <input type="text" id="cote" name="cote" size="10">
+
+        <label for="edition">Edition :</label>
+        <input type="checkbox" id="edition" name="edition" value="1">
+        <label for="edition">S. l. ? : [S.n].</label>
+
+        <label for="langue">Langue :</label>
+        <input type="text" id="langue" name="langue" size="50">
+
+        <label for="objectid">ObjectId :</label>
+        <input type="number" id="objectid" name="objectid">
+
         <label for="century">Siècle :</label>
-        <input type="number" id="century" name="century">
+        <input type="number" id="century" name="century" size="2">
+
+        <label for="title">Titre :</label>
+        <input type="text" id="title" name="title" size="100">
 
         <button type="submit">Ajouter</button>
 </form>

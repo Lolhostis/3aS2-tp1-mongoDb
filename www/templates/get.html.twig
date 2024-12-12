@@ -3,5 +3,13 @@
 {% block title %}Document ""{% endblock %}
 {% block content %}
     <p>&larr;&nbsp;<a href="/index.php">Retourner à la liste</a></p>
-    affichez le contenu d'un document de la liste
+    affichez le contenu d'un document de la liste :
+    <p>_id : {{ entity._id }} </p>
+    <p>Auteur : {{ entity.auteur }}</p>
+    <p>Cote : {{ entity.cote }}</p>
+    <p>Edition : {{ entity.edition }}</p>
+    <p>Langue : {{ entity.langue }}</p>
+    <p>Id de l'objet (ojectId) : {{ entity.objectid }}</p>
+    <p>Siècle : {{ entity.siecle }}</p>
+    <p>Titre : {{ entity.titre }}</p>
 {% endblock %}
