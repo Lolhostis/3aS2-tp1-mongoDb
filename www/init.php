@@ -25,3 +25,12 @@ function getMongoDbManager(): Database
     return $client->selectDatabase($_ENV['MDB_DB']);
 }
 
+function getRedisClient(): ?Redis
+{
+    if ($_ENV['REDIS_ENABLE'] == 'true') {
+        $redis = new Redis();
+        $redis->connect($_ENV['REDIS_HOST'], $_ENV['REDIS_PORT']);
+        return $redis;
+    }
+    return null;
+}
