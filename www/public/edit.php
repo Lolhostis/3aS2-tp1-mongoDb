@@ -8,8 +8,11 @@ use Twig\Error\SyntaxError;
 
 $twig = getTwig();
 $manager = getMongoDbManager();
+$redis = getRedisClient(); //J'initialise mon client Redis
 
-$entity = $manager->selectCollection('tp')->findOne(['_id' => new MongoDB\BSON\ObjectId($_GET['id'])]);
+$entity = $redis->get("entity:{$_GET['id']}");
+
+// $entity = $manager->selectCollection('tp')->findOne(['_id' => new MongoDB\BSON\ObjectId($_GET['id'])]);
 
 try {
     echo $twig->render('update.html.twig', ['entity' => $entity]);

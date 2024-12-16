@@ -8,11 +8,9 @@ use Twig\Error\SyntaxError;
 
 $twig = getTwig();
 $manager = getMongoDbManager();
-
-// petite aide : https://github.com/VSG24/mongodb-php-examples
+$redis = getRedisClient(); //J'initialise mon client Redis
 
 if (!empty($_POST)) {
-    // @todo coder l'enregistrement d'un nouveau livre en lisant le contenu de $_POST
     try {
         $author = $_POST['author'];
         $cote = $_POST['cote'];
@@ -39,6 +37,11 @@ if (!empty($_POST)) {
         ];
 
         $manager->selectCollection('tp')->insertOne($dataToInsert);
+
+        // Si Redis est activé, je supprime les données en cache pour que les données soient mises à jour
+        if ($redis) {
+            $redis->flushAll();
+        }
 
         header('Location: /index.php');
     } catch (LoaderError|RuntimeError|SyntaxError $e) {
