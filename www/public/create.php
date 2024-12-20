@@ -14,7 +14,7 @@ if (!empty($_POST)) {
     try {
         $author = $_POST['author'];
         $cote = $_POST['cote'];
-        $edition_bool = $_POST['edition'];
+        $edition_bool = isset($_POST['edition']) ? ($_POST['edition'] == true) : false; //Je mets une valeur par defaut à false si la checkbox n'est pas cochée
         $langue = $_POST['langue'];
         $objectid = $_POST['objectid'];
         $century = $_POST['century'];
@@ -38,10 +38,16 @@ if (!empty($_POST)) {
 
         $manager->selectCollection('tp')->insertOne($dataToInsert);
 
-        // Si Redis est activé, je supprime les données en cache pour que les données soient mises à jour
+        //$encodedQuery = urlencode(json_encode($dataToInsert));
+        $entity = $manager->selectCollection('tp')->findOne($dataToInsert);
+
+        $item_number = (string) $entity['_id'];
+        // Si Redis est activé, je mets à jour les données en cache
         if ($redis) {
-            $redis->flushAll();
+            $redis->set("manuscrit_{$item_number}", json_encode($entity));
         }
+        $old_items_number = $redis->get("items_number");
+        $redis->set("items_number", $old_items_number + 1);
 
         header('Location: /index.php');
     } catch (LoaderError|RuntimeError|SyntaxError $e) {
