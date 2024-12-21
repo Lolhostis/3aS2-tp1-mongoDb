@@ -42,13 +42,14 @@ if (!empty($_POST)) {
         $entity = $manager->selectCollection('tp')->findOne($dataToInsert);
 
         $item_number = (string) $entity['_id'];
+        $entity['_id'] = $item_number;
+
         // Si Redis est activé, je mets à jour les données en cache
         if ($redis) {
             $redis->set("manuscrit_{$item_number}", json_encode($entity));
         }
         $old_items_number = $redis->get("items_number");
         $redis->set("items_number", $old_items_number + 1);
-
         header('Location: /index.php');
     } catch (LoaderError|RuntimeError|SyntaxError $e) {
         echo $e->getMessage();
