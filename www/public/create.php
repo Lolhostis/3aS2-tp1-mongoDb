@@ -10,56 +10,42 @@ $twig = getTwig();
 $manager = getMongoDbManager();
 $redis = getRedisClient(); //J'initialise mon client Redis
 
-if (!empty($_POST)) {
-    try {
-        $author = $_POST['author'];
-        $cote = $_POST['cote'];
-        $edition_bool = isset($_POST['edition']) ? ($_POST['edition'] == true) : false; //Je mets une valeur par defaut à false si la checkbox n'est pas cochée
-        $langue = $_POST['langue'];
-        $objectid = $_POST['objectid'];
-        $century = $_POST['century'];
-        $title = $_POST['title'];
-
-        if(empty($title) || empty($author) || empty($century) || empty($objectid) || empty($langue) || empty($cote)) {
-            $erreur = 'Veuillez remplir TOUS les champs';
-            echo $twig->render('create.html.twig', ['erreur' => $erreur]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $requiredFields = ['author', 'cote', 'langue', 'objectid', 'century', 'title'];
+    foreach ($requiredFields as $field) {
+        if (empty($_POST[$field])) {
+            echo $twig->render('create.html.twig', ['erreur' => "Le champ $field est obligatoire."]);
             return;
         }
+    }
 
+    try {
         $dataToInsert = [
-            'auteur' => $author,
-            'cote' => $cote,
-            'edition' => $edition_bool ? "S. l. ? : [S.n]." : "",
-            'langue' => $langue,
-            'objectid' => $objectid,
-            'siecle' => $century,
-            'titre' => $title,
+            'auteur' => $_POST['author'],
+            'cote' => $_POST['cote'],
+            'edition' => isset($_POST['edition']) ? "S. l. ? : [S.n]." : "",
+            'langue' => $_POST['langue'],
+            'objectid' => $_POST['objectid'],
+            'siecle' => $_POST['century'],
+            'titre' => $_POST['title']
         ];
 
-        $manager->selectCollection('tp')->insertOne($dataToInsert);
-
-        //$encodedQuery = urlencode(json_encode($dataToInsert));
-        $entity = $manager->selectCollection('tp')->findOne($dataToInsert);
-
-        $item_number = (string) $entity['_id'];
-        $entity['_id'] = $item_number;
-
-        // Si Redis est activé, je mets à jour les données en cache
+        $result = $manager->selectCollection('tp')->insertOne($dataToInsert);
         if ($redis) {
-            $redis->set("manuscrit_{$item_number}", json_encode($entity));
+            // Ajouter l'ID généré automatiquement
+            $dataToInsert['_id'] = (string) $result->getInsertedId();
+
+            $redis->set("manuscrit_{$dataToInsert['_id']}", json_encode($dataToInsert));
         }
-        $old_items_number = $redis->get("items_number");
-        $redis->set("items_number", $old_items_number + 1);
-        header('Location: /index.php');
-    } catch (LoaderError|RuntimeError|SyntaxError $e) {
-        echo $e->getMessage();
+
+        header('Location: /index.php?new_id=' . (string) $result->getInsertedId(), true, 302);
+    } catch (Exception $e) {
+        error_log("Erreur d'insertion : " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => "Erreur interne."]);
+        echo $twig->render('create.html.twig', ['erreur' => "Erreur lors de l'ajout : " . $e->getMessage()]);
     }
 } else {
-// render template
-    try {
-        echo $twig->render('create.html.twig');
-    } catch (LoaderError|RuntimeError|SyntaxError $e) {
-        echo $e->getMessage();
-    }
+    echo $twig->render('create.html.twig');
 }
 

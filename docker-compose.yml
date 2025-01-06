@@ -86,7 +86,7 @@ services:
             - local
     tpmongo-k6:
         container_name: "tpmongo-k6"
-        image: loadimpact/k6:latest
+        image: grafana/k6:latest
         depends_on:
             - tpmongo-php
             - tpmongo-influxdb

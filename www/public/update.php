@@ -7,38 +7,36 @@ include_once '../init.php';
 $manager = getMongoDbManager();
 $redis = getRedisClient(); //J'initialise mon client Redis
 
-if (!empty($_POST)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $author = $_POST['author'];
-        $cote = $_POST['cote'];
-        $edition_bool = isset($_POST['edition']) ? ($_POST['edition'] == true) : false;
-        $langue = $_POST['langue'];
-        $objectid = $_POST['objectid'];
-        $century = $_POST['century'];
-        $title = $_POST['title'];
+        $id = $_POST['id'];
+//        if (!MongoDB\BSON\ObjectId::isValid($id)) {
+//            throw new Exception("ID invalide.");
+//        }
 
-        $dataToUpdate = [
-            'auteur' => $author,
-            'cote' => $cote,
-            'edition' => $edition_bool ? "S. l. ? : [S.n]." : "",
-            'langue' => $langue,
-            'objectid' => $objectid,
-            'siecle' => $century,
-            'titre' => $title,
+        $updateData = [
+            'auteur' => $_POST['author'],
+            'cote' => $_POST['cote'],
+            'edition' => isset($_POST['edition']) ? "S. l. ? : [S.n]." : "",
+            'langue' => $_POST['langue'],
+            'objectid' => $_POST['objectid'],
+            'siecle' => $_POST['century'],
+            'titre' => $_POST['title']
         ];
 
         $manager->selectCollection('tp')->updateOne(
-            ['_id' => new MongoDB\BSON\ObjectId($_POST['id'])],
-            ['$set' => $dataToUpdate]
+            ['_id' => new MongoDB\BSON\ObjectId($id)],
+            ['$set' => $updateData]
         );
 
-        // Si Redis est activé, je supprime les données en cache pour que les données soient mises à jour
         if ($redis) {
-            $redis->flushAll();
+            $updateData['_id'] = (string) $id;
+            $redis->set("manuscrit_{$id}", json_encode($updateData));
         }
 
         header('Location: /index.php');
-    } catch (LoaderError|RuntimeError|SyntaxError $e) {
-        echo $e->getMessage();
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
     }
 }
+
