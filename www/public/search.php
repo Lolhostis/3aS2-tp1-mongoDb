@@ -17,10 +17,8 @@ if (!empty($_POST)) {
     $encodedQuery = urlencode(json_encode($query));
 
     try {
-        //render index.html.twig with the search query in the URL and the page number set to 1
-        header("Location: index.php?page_number=1&query=$encodedQuery", true, 303);
-        exit();
-       // header("Location: index.php?page_number=1&query=$encodedQuery");
+       header("Location: index.php?page_number=1&query=$encodedQuery");
+       exit();
     } catch (LoaderError|RuntimeError|SyntaxError $e) {
         echo $e->getMessage();
     }

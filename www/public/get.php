@@ -11,6 +11,7 @@ $manager = getMongoDbManager();
 $redis = getRedisClient(); //J'initialise mon client Redis
 //Je veux definir id
 $id = $_GET['id'] ?? null;
+$entity = null;
 
 try{
     if($redis){
@@ -18,13 +19,18 @@ try{
             //prendre le dernier element de redis
             // throw new Exception("ID invalide.");
             // echo "ID invalide.";
-            // echo "The latest element will be displayed.";
-            $reverse_list = $redis->sort("manuscrits", ['limit' => [0, 1], 'order' => 'desc']);
-            $id = $reverse_list[0];
+            // echo "The latest element will be displayed.";)
+            $manusrits = $redis->keys("manuscrit_*");
+            $latest_manusrit = end($manusrits);
+            $id = explode("_", $latest_manusrit)[1]; //get the id of the latest manuscrit
         }
 
-        $entity = json_decode($redis->get("manuscrit_{$id}"), true);
-    }else{
+        if($redis->exists("manuscrit_{$id}")){
+            $entity = json_decode($redis->get("manuscrit_{$id}"), true);
+        } 
+    }
+    
+    if($entity == null){
         if ($id == null || empty($id)) {
             //prendre le dernier element de mongodb
             $reverse_list = $manager->selectCollection("tp")->find([], ['limit' => 1, 'sort' => ['_id' => -1]]);
@@ -47,6 +53,4 @@ try{
     }
 } catch (Exception $e) {
     echo "Erreur : " . $e->getMessage();
-} catch (LoaderError|RuntimeError|SyntaxError $e) {
-    echo $e->getMessage();
-}
+} 

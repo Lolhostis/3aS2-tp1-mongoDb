@@ -32,13 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $result = $manager->selectCollection('tp')->insertOne($dataToInsert);
         if ($redis) {
-            // Ajouter l'ID généré automatiquement
             $dataToInsert['_id'] = (string) $result->getInsertedId();
-
             $redis->set("manuscrit_{$dataToInsert['_id']}", json_encode($dataToInsert));
+
+            //Supprimer toutes les query devenues invalides dans Redis : celles qui n'ont pas le bon nombre d'éléments (donc un nombre d'ids différent de $step)
+            $keys = $redis->keys("search_*");
+            $step = $redis->get("step");
+            foreach ($keys as $key) {
+                $value = json_decode($redis->get($key), true);
+                if (count($value['items_in_this_page']) !== $step) {
+                    $redis->del($key);
+                }
+            }
         }
 
-        header('Location: /index.php?new_id=' . (string) $result->getInsertedId(), true, 302);
+        header('Location: /index.php');
     } catch (Exception $e) {
         error_log("Erreur d'insertion : " . $e->getMessage());
         http_response_code(500);

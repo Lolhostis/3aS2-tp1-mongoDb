@@ -34,14 +34,10 @@
             <td><a href="index.php?page_number={{ page_number - 1 }}&query={{ query }}">Page précédente ({{ page_number - 1 }})</a></td>
         {% endif %}
         <td>Page courante</td>
-        <td>{{ page_number }}</td>
-        <td>sur</td>
-        <td>{{ max_page_number }}</td>
+        <td>{{ page_number }} / {{ max_page_number }}</td>
         {% if page_number + 1 <= max_page_number %}
             <td><a href="index.php?page_number={{ page_number + 1 }}&query={{ query }}">Page suivante ({{ page_number + 1 }})</a></td>
         {% endif %}
     </tr>
 </table>
-
-<p>Element ajoute ID {{ new_id }}</p>
 {% endblock %}

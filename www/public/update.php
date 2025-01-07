@@ -10,9 +10,6 @@ $redis = getRedisClient(); //J'initialise mon client Redis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $id = $_POST['id'];
-//        if (!MongoDB\BSON\ObjectId::isValid($id)) {
-//            throw new Exception("ID invalide.");
-//        }
 
         $updateData = [
             'auteur' => $_POST['author'],
@@ -29,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ['$set' => $updateData]
         );
 
-        if ($redis) {
+        if ($redis && $redis->exists("manuscrit_{$id}")) {
             $updateData['_id'] = (string) $id;
             $redis->set("manuscrit_{$id}", json_encode($updateData));
         }
