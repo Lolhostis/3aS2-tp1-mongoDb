@@ -5,13 +5,13 @@
 <h1><a href="create.php">Ajouter un manuscrit</a></h1>
 <h1>Liste des manuscrits de la bibliothèque du Patrimoine de Clermont Auvergne Métropole</h1>
 
-<form action="search.php" method="post">
+<form action="index.php" method="get">
     <label for="search">Rechercher le titre d'un manuscrit :</label>
-    <input type="text" id="search" name="search" size="50">
+    <input type="text" id="search" name="search" size="50" placeholder="Titre ou auteur" value="{{ search|default('') }}">
     <button type="submit">Rechercher</button>
 </form>
 
-<table>
+ <table>
     <tr>
         <th>Référence</th>
         <th>Titre</th>
@@ -31,12 +31,12 @@
 <table>
     <tr>
         {% if page_number - 1 > 0 %}
-            <td><a href="index.php?page_number={{ page_number - 1 }}&query={{ query }}">Page précédente ({{ page_number - 1 }})</a></td>
+            <td><a href="index.php?page_number={{ page_number - 1 }}&search={{ search }}">Page précédente ({{ page_number - 1 }})</a></td>
         {% endif %}
         <td>Page courante</td>
         <td>{{ page_number }} / {{ max_page_number }}</td>
         {% if page_number + 1 <= max_page_number %}
-            <td><a href="index.php?page_number={{ page_number + 1 }}&query={{ query }}">Page suivante ({{ page_number + 1 }})</a></td>
+            <td><a href="index.php?page_number={{ page_number + 1 }}&search={{ search }}">Page suivante ({{ page_number + 1 }})</a></td>
         {% endif %}
     </tr>
 </table>

@@ -28,18 +28,24 @@ try {
                 $redis->del("manuscrit_{$id}");
 
                 //On supprime l'id de l'élément dans chaque query où il apparait (si il apparait) ET on décrément alors $total_of_elements
+//                $keys = $redis->keys("search_*");
+//                foreach ($keys as $key) {
+//                    $result = json_decode($redis->get($key), true);
+//                    if (in_array($id, $result['items_in_this_page'])) {
+//                        $result['items_in_this_page'] = array_diff($result['items_in_this_page'], [$id]);
+//                        $result['total_of_elements'] -= 1;
+//                        if($result['total_of_elements'] == 0) {
+//                            $redis->del($key);
+//                        }else{
+//                            $redis->set($key, json_encode($result));
+//                        }
+//                    }
+//                }
+                //On a besoin de sudecrementer tous les totaux des query qui sont identiques à celles qui ont été modifiées
+                //donc pour faire plus simple : flush toutes les query
                 $keys = $redis->keys("search_*");
                 foreach ($keys as $key) {
-                    $result = json_decode($redis->get($key), true);
-                    if (in_array($id, $result['items_in_this_page'])) {
-                        $result['items_in_this_page'] = array_diff($result['items_in_this_page'], [$id]);
-                        $result['total_of_elements'] -= 1;
-                        if($result['total_of_elements'] == 0) {
-                            $redis->del($key);
-                        }else{
-                            $redis->set($key, json_encode($result));
-                        }
-                    }
+                    $redis->del($key);
                 }
             }
         }elseif ($id == null || empty($id)) {
