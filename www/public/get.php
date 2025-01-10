@@ -28,9 +28,7 @@ try{
         if($redis->exists("manuscrit_{$id}")){
             $entity = json_decode($redis->get("manuscrit_{$id}"), true);
         } 
-    }
-    
-    if($entity == null){
+    }else{
         if ($id == null || empty($id)) {
             //prendre le dernier element de mongodb
             $reverse_list = $manager->selectCollection("tp")->find([], ['limit' => 1, 'sort' => ['_id' => -1]]);

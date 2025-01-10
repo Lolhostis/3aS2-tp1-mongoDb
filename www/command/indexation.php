@@ -46,8 +46,10 @@ function searchBooksInElastic($elasticClient, $searchQuery, $limit = 10, $offset
                     'multi_match' => [
                         'query' => $searchQuery,
                         'fields' => ['titre^2', 'auteur'], // Champs à rechercher
-                        'fuzziness' => 'AUTO', // Tolère les fautes de frappe
-                        'type' => 'best_fields' // Combine les résultats les plus pertinents
+                        'fuzziness' => 'AUTO:3', // Tolère les fautes de frappe jusqu'à 3 caractères
+                        'type' => 'best_fields', // Combine les résultats les plus pertinents
+                        'prefix_length' => 1, // Autorise les lettres manquantes après le premier caractère
+                        'fuzzy_transpositions' => true, // Autorise les transpositions de lettres
                     ]
                 ],
                 'from' => $offset, // Décalage (pour pagination)
@@ -233,43 +235,8 @@ function searchBooksInElastic($elasticClient, $searchQuery, $limit = 10, $offset
 //    $bulkParamsTp2['body'][] = $document;
 //}
 //
-//if (!empty($bulkParamsTp2['body'])) {
-//    $response = $elasticClient->bulk($bulkParamsTp2);
-//    if ($response['errors']) {
-//        echo "\nErrors occurred during bulk indexation for tp2\n";
-//    } else {
-//        echo "\nBulk indexation for tp2 completed successfully\n";
-//    }
-//} else {
-//    echo "\nNo documents to index for tp2\n";
-//}
-//
-//echo "\nIndexation terminée\n";
+
 //
 //
 //
 //
-//
-//
-//
-//// $params = [
-////     'index' => 'tp',
-////     'body' => [
-////         'from' => ($page - 1) * 50,
-////         'size' => 50,
-////         'query' => [
-////             'multi_match' => [
-////                 'query' => "*$search*",
-////                 'fields' => [
-////                     'titre^2',
-////                     'auteur'
-////                 ],
-////                 'fuzziness' => 'AUTO:3,6',
-////                 'prefix_length' => 1, // Allow for missing letters after the first character
-////                 'operator' => 'AND',
-//
-////                 'fuzzy_transpositions' => true,
-////             ]
-////         ]
-////     ]
-//// ];
